@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Finanzas</title>
+
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Iconos Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  >
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="toggle-btn">
+      <span>&#9776;</span>
+    </div>
+
+    <ul>
+      <li>
+        <img src="img/logo.jpg" alt="Logotipo" class="log">
+      </li>
+      <li><i class="fa-solid fa-chart-line"></i>Dashboard</li>
+      <li><i class="fa-solid fa-money-bill-transfer"></i>Movimientos</li>
+      <li><i class="fa-solid fa-bullseye"></i>Metas Financieras</li>
+      <li><i class="fa-solid fa-wallet"></i>Presupuesto</li>
+      <li><i class="fa-solid fa-chart-pie"></i>Gráficas</li>
+      <li><i class="fa-solid fa-file-lines"></i>Reportes</li>
+      <li><i class="fa-solid fa-gear"></i>Configuración</li>
+    </ul>
+  </div>
+<main class="contenido-principal">
+
+  <section class="bienvenida">
+    <div class="texto">
+      <h1>¡Hola, Alejandro! 👋</h1>
+      <p>Aquí tienes un resumen de tus finanzas.</p>
+    </div>
+  </section>
+
+  <section class="contenedor-cajas">
+
+    <div class="cajon-flotante" id="uno">
+      <div>
+        <span>Saldo Actual</span>
+        <h3>$1.250.000</h3>
+        <p>Disponible</p>
+      </div>
+      <i class="fa-solid fa-wallet"></i>
+    </div>
+
+    <div class="cajon-flotante" id="dos">
+      <div>
+        <span>Ingresos</span>
+        <h3>$2.800.000</h3>
+        <p>Este mes</p>
+      </div>
+      <i class="fa-solid fa-arrow-up"></i>
+    </div>
+
+    <div class="cajon-flotante" id="tres">
+      <div>
+        <span>Gastos</span>
+        <h3>$1.550.000</h3>
+        <p>Este mes</p>
+      </div>
+      <i class="fa-solid fa-arrow-down"></i>
+    </div>
+
+    <div class="cajon-flotante" id="cuatro">
+      <div>
+        <span>Ahorro del Mes</span>
+        <h3>$1.250.000</h3>
+        <p>45% de tus ingresos</p>
+      </div>
+      <i class="fa-solid fa-piggy-bank"></i>
+    </div>
+
+  </section>
+
+  <section class="fila-superior-dashboard">
+
+    <div class="seccion-grafica">
+      <h2>Ingresos vs Gastos</h2>
+
+      <div class="micanvas-container">
+        <canvas id="micanvas"></canvas>
+      </div>
+
+      <div class="mensaje-ahorro">
+        <i class="fa-solid fa-chart-line"></i>
+        ¡Vas bien! Este mes ahorraste 45% de tus ingresos.
+      </div>
+    </div>
+
+    <div class="formulario-movimiento">
+      <h2>Agrega tu movimiento</h2>
+
+      <form action="getform.php" method="get">
+
+        <div class="campo">
+          <label for="monto">Monto</label>
+          <div class="input-icono">
+            <input type="number" id="monto" name="monto" placeholder="Ingresa el monto">
+            <i class="fa-solid fa-dollar-sign"></i>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="tipo">Tipo de Movimiento</label>
+          <select id="tipo" name="tipo">
+            <option value="Ingreso">Ingresos</option>
+            <option value="Gasto">Gastos</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción del Movimiento</label>
+          <select id="descripcion" name="descripcion">
+            <option value="">Selecciona una descripción</option>
+            <option value="Salario">Salario</option>
+            <option value="Comida">Comida</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+
+        <button type="submit">Agregar Movimiento</button>
+
+      </form>
+    </div>
+
+  </section>
+
+  <section class="fila-inferior-dashboard">
+
+    <div class="historial-de-movimientos">
+      <div class="titulo-card">
+        <h3>Movimientos Recientes</h3>
+        <a href="#">Ver todos</a>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+
+        <tbody id="tablamovimientos">
+          <tr>
+            <td>25/05/2024</td>
+            <td>Ingreso</td>
+            <td>Ingreso de sueldo</td>
+            <td>Trabajo</td>
+            <td>+$2.000.000</td>
+          </tr>
+          <tr>
+            <td>24/05/2024</td>
+            <td>Gasto</td>
+            <td>Supermercado</td>
+            <td>Mercado</td>
+            <td>-$150.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="metas-financieras">
+      <div class="titulo-card">
+        <h3>Metas Financieras</h3>
+        <a href="#">Ver todas</a>
+      </div>
+
+      <div class="lista-metas">
+
+        <div class="meta-item">
+          <div class="progreso-circular progreso-40">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <defs>
+                <linearGradient id="GradientMeta1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#DA22FF"></stop>
+                  <stop offset="100%" stop-color="#9733EE"></stop>
+                </linearGradient>
+              </defs>
+
+              <circle class="circulo-fondo" cx="45" cy="45" r="35"></circle>
+              <circle class="circulo-progreso" cx="45" cy="45" r="35"></circle>
+            </svg>
+
+            <span>40%</span>
+          </div>
+
+          <div class="info-meta">
+            <h4>Viaje a Europa ✈️</h4>
+            <p>$800.000 / $2.000.000</p>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <div class="progreso-circular progreso-42">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <defs>
+                <linearGradient id="GradientMeta2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00c853"></stop>
+                  <stop offset="100%" stop-color="#00a86b"></stop>
+                </linearGradient>
+              </defs>
+
+              <circle class="circulo-fondo" cx="45" cy="45" r="35"></circle>
+              <circle class="circulo-progreso" cx="45" cy="45" r="35"></circle>
+            </svg>
+
+            <span>42%</span>
+          </div>
+
+          <div class="info-meta">
+            <h4>Fondo de Emergencia 🛡️</h4>
+            <p>$1.250.000 / $3.000.000</p>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <div class="progreso-circular progreso-20">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <defs>
+                <linearGradient id="GradientMeta3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffb300"></stop>
+                  <stop offset="100%" stop-color="#ff8f00"></stop>
+                </linearGradient>
+              </defs>
+
+              <circle class="circulo-fondo" cx="45" cy="45" r="35"></circle>
+              <circle class="circulo-progreso" cx="45" cy="45" r="35"></circle>
+            </svg>
+
+            <span>20%</span>
+          </div>
+
+          <div class="info-meta">
+            <h4>Nueva Laptop 💻</h4>
+            <p>$300.000 / $1.500.000</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+</main>
+  
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
