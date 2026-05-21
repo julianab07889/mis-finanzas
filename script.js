@@ -1,55 +1,216 @@
-let btn = document.querySelector(".toggle-btn");
+// ===============================
+// DATOS GUARDADOS
+// ===============================
 
-btn.addEventListener("click", function () {
-    document.getElementById("sidebar").classList.toggle("active");
+let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+
+// ===============================
+// ELEMENTOS DEL HTML
+// ===============================
+
+const formulario = document.getElementById("formMovimiento");
+const inputMonto = document.getElementById("monto");
+const selectTipo = document.getElementById("tipo");
+const selectDescripcion = document.getElementById("descripcion");
+const tablaMovimientos = document.getElementById("tablamovimientos");
+
+const tarjetaSaldo = document.querySelector("#uno h3");
+const tarjetaIngresos = document.querySelector("#dos h3");
+const tarjetaGastos = document.querySelector("#tres h3");
+const tarjetaAhorro = document.querySelector("#cuatro h3");
+const textoAhorro = document.querySelector("#cuatro p");
+
+// ===============================
+// FORMATO PESOS COLOMBIANOS
+// ===============================
+
+function formatearCOP(valor) {
+  return valor.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
+
+// ===============================
+// GUARDAR EN EL NAVEGADOR
+// ===============================
+
+function guardarMovimientos() {
+  localStorage.setItem("movimientos", JSON.stringify(movimientos));
+}
+
+// ===============================
+// AGREGAR MOVIMIENTO
+// ===============================
+
+formulario.addEventListener("submit", function (evento) {
+  evento.preventDefault();
+
+  const monto = Number(inputMonto.value);
+  const tipo = selectTipo.value;
+  const descripcion = selectDescripcion.value;
+
+  if (monto <= 0 || descripcion === "") {
+    alert("Por favor ingresa un monto válido y selecciona una descripción.");
+    return;
+  }
+
+  const nuevoMovimiento = {
+    fecha: new Date().toLocaleDateString("es-CO"),
+    tipo: tipo,
+    descripcion: descripcion,
+    categoria: descripcion,
+    monto: monto
+  };
+
+  movimientos.push(nuevoMovimiento);
+
+  guardarMovimientos();
+  pintarTabla();
+  actualizarTarjetas();
+  actualizarGrafica();
+
+  formulario.reset();
 });
 
+// ===============================
+// PINTAR TABLA
+// ===============================
 
-// GRAFICA
+function pintarTabla() {
+  tablaMovimientos.innerHTML = "";
 
-let contexto = document.getElementById("micanvas").getContext("2d");
+  movimientos.forEach(function (movimiento, index) {
+    const fila = document.createElement("tr");
 
-let opciones = {
-    type: "line",
+    const signo = movimiento.tipo === "Ingreso" ? "+" : "-";
+    const claseMonto = movimiento.tipo === "Ingreso" ? "monto-ingreso" : "monto-gasto";
 
-    data: {
-        labels: ["Ene", "Feb", "Mar", "Abr", "May"],
+    fila.innerHTML = `
+      <td>${movimiento.fecha}</td>
+      <td>${movimiento.tipo}</td>
+      <td>${movimiento.descripcion}</td>
+      <td>${movimiento.categoria}</td>
+      <td class="${claseMonto}">${signo}${formatearCOP(movimiento.monto)}</td>
+      <td>
+        <button class="btn-eliminar" onclick="eliminarMovimiento(${index})">
+          Eliminar
+        </button>
+      </td>
+    `;
 
-        datasets: [
-            {
-                label: "Ingresos",
-                data: [500000, 1000000, 1500000, 2000000, 2500000],
-                backgroundColor: "rgb(0,200,200)",
-                borderColor: "rgb(0,200,0)",
-                borderWidth: 2
-            },
-            {
-                label: "Gastos",
-                data: [400000, 800000, 1200000, 1500000, 1800000],
-                backgroundColor: "rgb(200,50,50)",
-                borderColor: "rgb(200,50,50)",
-                borderWidth: 2
-            }
-        ]
-    },
+    tablaMovimientos.appendChild(fila);
+  });
+}
 
-    options: {
-        responsive: true,
-        maintainAspectRatio: false
+// ===============================
+// ELIMINAR MOVIMIENTO
+// ===============================
+
+function eliminarMovimiento(index) {
+  movimientos.splice(index, 1);
+
+  guardarMovimientos();
+  pintarTabla();
+  actualizarTarjetas();
+  actualizarGrafica();
+}
+
+// ===============================
+// ACTUALIZAR TARJETAS
+// ===============================
+
+function actualizarTarjetas() {
+  let ingresos = 0;
+  let gastos = 0;
+
+  movimientos.forEach(function (movimiento) {
+    if (movimiento.tipo === "Ingreso") {
+      ingresos += movimiento.monto;
+    } else {
+      gastos += movimiento.monto;
     }
-};
+  });
 
-let grafica = new Chart(contexto, opciones);
-let tablaMovimientos = document.getElementById("tablaMovimientos");
+  const saldo = ingresos - gastos;
+  const ahorro = saldo;
 
-let fila = document.createElement("tr");
+  let porcentajeAhorro = 0;
 
-fila.innerHTML = `
-    <td>18/05/2026</td>
-    <td>Ingreso</td>
-    <td>Pago salario</td>
-    <td>Trabajo</td>
-    <td>$1.500.000</td>
-`;
+  if (ingresos > 0) {
+    porcentajeAhorro = Math.round((ahorro / ingresos) * 100);
+  }
 
-tablaMovimientos.appendChild(fila);
+  tarjetaSaldo.textContent = formatearCOP(saldo);
+  tarjetaIngresos.textContent = formatearCOP(ingresos);
+  tarjetaGastos.textContent = formatearCOP(gastos);
+  tarjetaAhorro.textContent = formatearCOP(ahorro);
+  textoAhorro.textContent = `${porcentajeAhorro}% de tus ingresos`;
+}
+
+// ===============================
+// GRÁFICA
+// ===============================
+
+const ctx = document.getElementById("micanvas").getContext("2d");
+
+let grafica = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: ["Sin datos"],
+    datasets: [
+      {
+        label: "Ingresos",
+        data: [0],
+        borderColor: "green",
+        backgroundColor: "green",
+        tension: 0.3
+      },
+      {
+        label: "Gastos",
+        data: [0],
+        borderColor: "red",
+        backgroundColor: "red",
+        tension: 0.3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+function actualizarGrafica() {
+  const labels = movimientos.map(function (movimiento, index) {
+    return `Mov. ${index + 1}`;
+  });
+
+  const ingresos = movimientos.map(function (movimiento) {
+    return movimiento.tipo === "Ingreso" ? movimiento.monto : 0;
+  });
+
+  const gastos = movimientos.map(function (movimiento) {
+    return movimiento.tipo === "Gasto" ? movimiento.monto : 0;
+  });
+
+  grafica.data.labels = labels.length > 0 ? labels : ["Sin datos"];
+  grafica.data.datasets[0].data = ingresos.length > 0 ? ingresos : [0];
+  grafica.data.datasets[1].data = gastos.length > 0 ? gastos : [0];
+
+  grafica.update();
+}
+
+// ===============================
+// CARGA INICIAL
+// ===============================
+
+pintarTabla();
+actualizarTarjetas();
+actualizarGrafica();
